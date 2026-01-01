@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { trpc } from '../src/utils/trpc';
-import { MessageSquare, Send, X, Loader2 } from 'lucide-react';
+import { MessageSquare, Send, X, Trash2 } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -52,6 +52,31 @@ export function ChatWindow() {
         },
     });
 
+    // Load history from storage on mount
+    useEffect(() => {
+        chrome.storage.local.get(['chatHistory'], (result) => {
+            if (result.chatHistory) {
+                setMessages(result.chatHistory);
+            }
+        });
+    }, []);
+
+    // Save history to storage whenever it changes
+    useEffect(() => {
+        if (messages.length > 1) { // Don't save if only initial message
+            chrome.storage.local.set({ chatHistory: messages });
+        }
+    }, [messages]);
+
+    const handleClearHistory = () => {
+        const initialMessage: Message = {
+            role: 'assistant',
+            content: 'Hello! I am your AI assistant. How can I help you today?',
+        };
+        setMessages([initialMessage]);
+        chrome.storage.local.remove(['chatHistory']);
+    };
+
     const handleSend = () => {
         if (!input.trim() || sendMessageMutation.isPending) return;
 
@@ -93,12 +118,21 @@ export function ChatWindow() {
                             <div className="w-2 h-2 rounded-full bg-green-500" />
                             <span className="font-medium text-white">AI Assistant</span>
                         </div>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="p-1 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-colors"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={handleClearHistory}
+                                className="p-1 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-colors"
+                                title="Clear History"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="p-1 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-colors"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Messages Area */}
@@ -132,9 +166,10 @@ export function ChatWindow() {
                         ))}
                         {sendMessageMutation.isPending && (
                             <div className="flex justify-start">
-                                <div className="bg-white/10 text-white/90 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm flex items-center gap-2">
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Thinking...</span>
+                                <div className="bg-white/10 text-white/90 p-4 rounded-2xl rounded-tl-none max-w-[80%] flex items-center gap-1">
+                                    <div className="w-2 h-2 bg-white/50 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                    <div className="w-2 h-2 bg-white/50 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                    <div className="w-2 h-2 bg-white/50 rounded-full animate-bounce"></div>
                                 </div>
                             </div>
                         )}
