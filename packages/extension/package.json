@@ -1,0 +1,39 @@
+{
+    "name": "@new-tab-ai/extension",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "wxt",
+        "dev:firefox": "wxt -b firefox",
+        "build": "wxt build",
+        "zip": "wxt zip",
+        "postinstall": "wxt prepare",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    },
+    "dependencies": {
+        "@new-tab-ai/shared": "workspace:*",
+        "@tanstack/react-query": "^4.36.1",
+        "@trpc/client": "^10.45.0",
+        "@trpc/react-query": "^10.45.0",
+        "framer-motion": "^10.16.4",
+        "lucide-react": "^0.294.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@new-tab-ai/web": "workspace:^",
+        "@types/chrome": "^0.0.254",
+        "@types/react": "^18.2.0",
+        "@types/react-dom": "^18.2.0",
+        "@wxt-dev/module-react": "^1.1.5",
+        "autoprefixer": "^10.4.17",
+        "eslint": "^8.56.0",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-react-refresh": "^0.4.5",
+        "postcss": "^8.4.35",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5.3.3",
+        "wxt": "^0.20.13"
+    }
+}
